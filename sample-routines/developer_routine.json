@@ -1,0 +1,41 @@
+{
+  "wakeTime": "06:45",
+  "sleepTime": "23:15",
+  "anchors": [
+    {
+      "name": "Morning Coffee & Hydration",
+      "startTime": "06:45",
+      "endTime": "07:30",
+      "category": "REST_LEISURE",
+      "flexible": false
+    },
+    {
+      "name": "Engineering Sprint Standup",
+      "startTime": "09:30",
+      "endTime": "10:00",
+      "category": "ADMINISTRATIVE",
+      "flexible": false
+    },
+    {
+      "name": "Lunch & Sunlight Walk",
+      "startTime": "12:30",
+      "endTime": "13:30",
+      "category": "REST_LEISURE",
+      "flexible": false
+    },
+    {
+      "name": "CrossFit / Gym Workout",
+      "startTime": "17:30",
+      "endTime": "18:45",
+      "category": "HEALTH_FITNESS",
+      "flexible": true
+    },
+    {
+      "name": "Dinner & Wind Down",
+      "startTime": "19:30",
+      "endTime": "20:30",
+      "category": "REST_LEISURE",
+      "flexible": false
+    }
+  ]
+}

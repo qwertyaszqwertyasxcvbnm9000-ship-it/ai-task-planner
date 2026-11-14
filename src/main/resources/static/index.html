@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AuraRoutine | AI Behavioral Daily Task Scheduler</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="header-container">
+      <div class="logo-group">
+        <div class="logo-icon">⚡</div>
+        <div class="logo-text">
+          <h1>AuraRoutine</h1>
+          <span>AI Behavioral Routine Scheduler</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- AI Status Badge -->
+        <div id="ai-status-badge" class="ai-status-pill" title="AI Engine Status">
+          <span class="status-dot"></span>
+          <span id="ai-model-label">Checking AI Engine...</span>
+        </div>
+
+        <!-- Date Selector -->
+        <div class="date-picker-wrap">
+          <button id="prev-day-btn" title="Previous Day">◀</button>
+          <input type="date" id="current-date-input">
+          <button id="next-day-btn" title="Next Day">▶</button>
+        </div>
+
+        <!-- Smart Schedule Action -->
+        <button id="smart-schedule-btn" class="btn-primary">
+          <span>✨</span> Smart Schedule Day
+        </button>
+
+        <!-- Calendar Export (.ics) -->
+        <a id="export-ics-btn" class="btn-secondary" href="/api/calendar/export.ics" download>
+          <span>📅</span> Export .ICS
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main 3-Column Layout -->
+  <main class="app-container">
+
+    <!-- Column 1: Task Entry & Routine Anchors -->
+    <section class="col-tasks">
+
+      <!-- Quick Add Task -->
+      <div class="glass-panel" style="margin-bottom: 1.25rem;">
+        <div class="card-header">
+          <h2 class="card-title"><span>➕</span> Add New Task</h2>
+        </div>
+        <div class="card-body">
+          <form id="new-task-form">
+            <div class="form-group">
+              <label for="task-title">Task Title</label>
+              <input type="text" id="task-title" class="form-control" placeholder="e.g. Design GraphQL Schema" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="task-category">Category</label>
+                <select id="task-category" class="form-control">
+                  <option value="DEEP_WORK">Deep Work</option>
+                  <option value="CREATIVE">Creative</option>
+                  <option value="ADMINISTRATIVE">Administrative</option>
+                  <option value="HEALTH_FITNESS">Health & Fitness</option>
+                  <option value="LEARNING">Learning</option>
+                  <option value="ERRAND">Errand</option>
+                  <option value="REST_LEISURE">Rest / Leisure</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="task-est-mins">Est. Mins</label>
+                <input type="number" id="task-est-mins" class="form-control" value="45" min="10" max="360" step="5">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="task-priority">Priority</label>
+                <select id="task-priority" class="form-control">
+                  <option value="HIGH">High</option>
+                  <option value="MEDIUM" selected>Medium</option>
+                  <option value="LOW">Low</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="task-energy">Cognitive Load</label>
+                <select id="task-energy" class="form-control">
+                  <option value="HIGH">High (Peak Focus)</option>
+                  <option value="MEDIUM" selected>Medium</option>
+                  <option value="LOW">Low (Shallow)</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 0.5rem;">
+              Add Task to Day
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Recurring Routine Anchors -->
+      <div class="glass-panel" style="margin-bottom: 1.25rem;">
+        <div class="card-header">
+          <h2 class="card-title"><span>⚓</span> Routine Anchors</h2>
+          <button id="add-anchor-toggle-btn" class="btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
+            + Custom
+          </button>
+        </div>
+        <div class="card-body">
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            Fixed habits and non-negotiables that the AI schedules tasks around.
+          </p>
+          <div id="anchors-list">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Past Routine / AI Routine Learner -->
+      <div class="glass-panel">
+        <div class="card-header">
+          <h2 class="card-title"><span>📥</span> Learn Past Routine</h2>
+        </div>
+        <div class="card-body">
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            Upload your historical schedule (CSV, JSON, ICS) or paste free-form text. The AI extracts habits, anchor slots, and peak hours.
+          </p>
+
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <button id="load-sample-routine-btn" class="btn-secondary" style="font-size: 0.75rem; flex: 1;">
+              📄 Load Sample CSV
+            </button>
+            <button id="load-sample-text-btn" class="btn-secondary" style="font-size: 0.75rem; flex: 1;">
+              ✍️ Sample Notes
+            </button>
+          </div>
+
+          <textarea id="routine-upload-text" class="form-control" rows="4"
+                    placeholder="Paste CSV, iCalendar (.ics), JSON, or natural notes like:&#10;7:00 AM Wake up&#10;7:30 AM Gym&#10;12:30 PM Lunch&#10;19:30 Dinner"></textarea>
+
+          <button id="submit-routine-upload-btn" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 0.75rem;">
+            🧠 Analyze & Learn Routine
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Column 2: Interactive Day Timeline -->
+    <section class="col-timeline">
+      <div class="glass-panel timeline-card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" id="timeline-date-title"><span>🗓️</span> Daily Schedule</h2>
+            <p id="timeline-subtitle" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Showing timeline for today
+            </p>
+          </div>
+
+          <div class="timeline-header-actions">
+            <span id="overall-alignment-badge" class="badge badge-deep" style="font-size: 0.78rem;">
+              Circadian Alignment: --
+            </span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- Timeline hour blocks -->
+          <div id="timeline-scroll-container" class="timeline-container">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Column 3: Learned Profile & Habit Drift Analytics -->
+    <section class="col-analytics">
+
+      <!-- Circadian Energy Curve -->
+      <div class="glass-panel" style="margin-bottom: 1.25rem;">
+        <div class="card-header">
+          <h2 class="card-title"><span>⚡</span> Circadian Energy Curve</h2>
+          <span id="chronotype-badge" class="badge badge-creative">Morning Lark</span>
+        </div>
+        <div class="card-body">
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+            Learned hourly productivity index (00:00 - 23:00). High demand tasks are routed to peak hours.
+          </p>
+
+          <div id="circadian-chart" class="circadian-chart">
+            <!-- 24 hourly bars rendered dynamically -->
+          </div>
+
+          <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-dim);">
+            <span>06:00 (Wake)</span>
+            <span style="color: #818cf8; font-weight: 600;">Peak (09-12)</span>
+            <span>Dip (13-15)</span>
+            <span>23:00 (Sleep)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Duration Velocity Learning -->
+      <div class="glass-panel" style="margin-bottom: 1.25rem;">
+        <div class="card-header">
+          <h2 class="card-title"><span>⏱️</span> Learned Task Velocities</h2>
+        </div>
+        <div class="card-body">
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            Bayesian multipliers learned from actual vs. estimated durations to prevent schedule overrun.
+          </p>
+
+          <div id="multipliers-list">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Habit Drift & AI Coach -->
+      <div class="glass-panel">
+        <div class="card-header">
+          <h2 class="card-title"><span>🧭</span> Habit Drift Analytics</h2>
+        </div>
+        <div class="card-body">
+          <div class="metric-row">
+            <div class="metric-box">
+              <div id="metric-drift-pct" class="metric-val">0%</div>
+              <div class="metric-lbl">Routine Drift</div>
+            </div>
+            <div class="metric-box">
+              <div id="metric-accuracy-pct" class="metric-val good">100%</div>
+              <div class="metric-lbl">Estimation Accuracy</div>
+            </div>
+          </div>
+
+          <div id="habit-insights-container" class="insights-list">
+            <!-- Dynamic insights & alerts -->
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Task Completion / Micro-Feedback Modal -->
+  <div id="feedback-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="card-title"><span>🎯</span> Task Completed & Micro-Feedback</h3>
+        <button id="close-feedback-modal-btn" style="background: none; border: none; color: white; cursor: pointer; font-size: 1.25rem;">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="modal-task-title" style="font-weight: 600; font-size: 1rem; color: white; margin-bottom: 0.5rem;"></p>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+          How did this task go? Your feedback refines the AI's future time allocations and energy matching.
+        </p>
+
+        <div class="form-group">
+          <label for="modal-actual-minutes">Actual Minutes Spent</label>
+          <input type="number" id="modal-actual-minutes" class="form-control" value="45" min="5" max="480">
+        </div>
+
+        <div class="form-group">
+          <label>How did the timing feel?</label>
+          <div class="feedback-options">
+            <div class="feedback-btn active" data-rating="JUST_RIGHT">✨ Spot on / Perfect</div>
+            <div class="feedback-btn" data-rating="FELT_RUSHED">⏳ Felt Rushed</div>
+            <div class="feedback-btn" data-rating="TOOK_LONGER">📈 Took Longer</div>
+            <div class="feedback-btn" data-rating="EASY_FAST">⚡ Finished Early</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="modal-notes">Optional Notes</label>
+          <input type="text" id="modal-notes" class="form-control" placeholder="e.g. Interrupted by urgent phone call">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="save-feedback-btn" class="btn-primary">Save & Train AI</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

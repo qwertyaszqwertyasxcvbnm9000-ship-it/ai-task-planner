@@ -1,0 +1,8 @@
+Name,StartTime,EndTime,Category,Flexible
+Morning Walk & Light Cardio,06:30,07:15,HEALTH_FITNESS,false
+Breakfast & Cold Shower,07:15,08:00,REST_LEISURE,false
+Daily Engineering Standup,09:30,10:00,ADMINISTRATIVE,false
+Lunch & Power Walk,12:30,13:30,REST_LEISURE,false
+Gym Strength Training,17:30,18:45,HEALTH_FITNESS,true
+Family Dinner,19:30,20:30,REST_LEISURE,false
+Evening Wind-down & Reading,22:30,23:15,REST_LEISURE,false
